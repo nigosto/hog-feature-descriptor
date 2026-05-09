@@ -47,10 +47,7 @@ class TestPipeline(unittest.TestCase):
             ]
         )
 
-        blocks = pipeline.run(img)
-        vector = [
-            feature for descriptor in blocks.descriptors for feature in descriptor
-        ]
+        vector = pipeline.run(img)
         expected = [
             0.0,
             0.0,
@@ -70,7 +67,7 @@ class TestPipeline(unittest.TestCase):
             0.35036,
             0.0,
             0.0,
-            0.0,
+            0.32831,
             0.0,
             0.0,
             0.0,
@@ -78,8 +75,8 @@ class TestPipeline(unittest.TestCase):
             0.0,
             0.35036,
             0.0,
-            0.32830,
-            0.32830,
+            0.0,
+            0.32831,
             0.0,
             0.35036,
             0.0,

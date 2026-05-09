@@ -31,8 +31,8 @@ class Histograms(Stage):
                 row = i + cell_row * self.cell_size
                 column = j + cell_column * self.cell_size
                 pixel_index = row * gradients.width + column
-                angle = gradients.orientations[pixel_index]
-                bin_index = min(int(angle / self.bin_width), self.bins_per_cell - 1)
+                angle = gradients.orientations[pixel_index] % 180
+                bin_index = int(angle / self.bin_width)
 
                 histogram[bin_index] += gradients.magnitudes[pixel_index]
 
