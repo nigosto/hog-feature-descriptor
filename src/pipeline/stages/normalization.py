@@ -4,17 +4,35 @@ from src.models import Cells
 
 
 class Normalization(Stage):
-    def __init__(self, block_size: int):
+    def __init__(self, block_size: int, flatten: bool = True):
         self.block_size = block_size
+        self.flatten = flatten
 
     def apply(self, cells: Cells) -> list[float]:
+        if self.flatten:
+            return self.apply_with_flatten(cells)
+        
+        return self.apply_without_flatten(cells)
+
+    def apply_with_flatten(self, cells: Cells) -> list[float]:
         blocks_per_column = cells.rows - self.block_size + 1
         blocks_per_row = cells.columns - self.block_size + 1
         vector = []
 
         for i in range(blocks_per_column):
             for j in range(blocks_per_row):
-                vector.extend(self.normalize_histograms_per_block(cells, i, j))
+                    vector.extend(self.normalize_histograms_per_block(cells, i, j))
+
+        return vector
+
+    def apply_without_flatten(self, cells: Cells) -> list[float]:
+        blocks_per_column = cells.rows - self.block_size + 1
+        blocks_per_row = cells.columns - self.block_size + 1
+        vector = []
+
+        for i in range(blocks_per_column):
+            for j in range(blocks_per_row):
+                    vector.append(self.normalize_histograms_per_block(cells, i, j))
 
         return vector
 
