@@ -222,5 +222,6 @@ data
 *.prof
 *.html
 *.json
-*.txt
+notes.txt
 *.bin
+*.tar.gz
