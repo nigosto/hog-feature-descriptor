@@ -1,7 +1,17 @@
 from .resizing import Resizing
-from .grayscale import Grayscale
-from .gradients import SobelGradients
-from .histograms import Histograms
-from .normalization import Normalization
+from .grayscale import Grayscale, VectorizedGrayscale
+from .gradients import SobelGradients, VectorizedSobelGradients
+from .histograms import Histograms, VectorizedHistograms
+from .normalization import Normalization, VectorizedNormalization
 
-__all__ = ["Resizing", "Grayscale", "SobelGradients", "Histograms", "Normalization"]
+__all__ = [
+    "Resizing",
+    "Grayscale",
+    "VectorizedGrayscale",
+    "SobelGradients",
+    "VectorizedSobelGradients",
+    "Histograms",
+    "VectorizedHistograms",
+    "Normalization",
+    "VectorizedNormalization"
+]

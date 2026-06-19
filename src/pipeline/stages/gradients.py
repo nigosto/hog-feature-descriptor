@@ -1,6 +1,7 @@
+import numpy as np
 import math
 from .. import Stage
-from src.models import Image, Gradients
+from src.models import Image, NumpyImage, Gradients, NumpyGradients
 
 
 class SobelGradients(Stage):
@@ -33,3 +34,23 @@ class SobelGradients(Stage):
                 )
 
         return Gradients(img.height, img.width, magnitudes, orientations)
+
+
+class VectorizedSobelGradients(Stage):
+    gx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    gy = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
+
+    def apply(self, img: NumpyImage) -> NumpyGradients:
+        strided = np.lib.stride_tricks.sliding_window_view(img.pixels, (3, 3))
+        horizontal_gradients = np.sum(strided * self.gx, axis=(2, 3))
+        vertical_gradients = np.sum(strided * self.gy, axis=(2, 3))
+
+        magnitudes = np.hypot(horizontal_gradients, vertical_gradients)
+        orientations = (
+            np.degrees(np.arctan2(vertical_gradients, horizontal_gradients)) % 180
+        )
+
+        magnitudes = np.pad(magnitudes, pad_width=1, mode='constant', constant_values=0.0)
+        orientations = np.pad(orientations, pad_width=1, mode='constant', constant_values=0.0)
+
+        return NumpyGradients(img.height, img.width, magnitudes, orientations)

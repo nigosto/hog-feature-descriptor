@@ -1,6 +1,7 @@
 import math
+import numpy as np
 from .. import Stage
-from src.models import Cells
+from src.models import Cells, NumpyCells
 
 
 class Normalization(Stage):
@@ -11,7 +12,7 @@ class Normalization(Stage):
     def apply(self, cells: Cells) -> list[float]:
         if self.flatten:
             return self.apply_with_flatten(cells)
-        
+
         return self.apply_without_flatten(cells)
 
     def apply_with_flatten(self, cells: Cells) -> list[float]:
@@ -21,7 +22,7 @@ class Normalization(Stage):
 
         for i in range(blocks_per_column):
             for j in range(blocks_per_row):
-                    vector.extend(self.normalize_histograms_per_block(cells, i, j))
+                vector.extend(self.normalize_histograms_per_block(cells, i, j))
 
         return vector
 
@@ -32,7 +33,7 @@ class Normalization(Stage):
 
         for i in range(blocks_per_column):
             for j in range(blocks_per_row):
-                    vector.append(self.normalize_histograms_per_block(cells, i, j))
+                vector.append(self.normalize_histograms_per_block(cells, i, j))
 
         return vector
 
@@ -55,3 +56,34 @@ class Normalization(Stage):
         norm = math.sqrt(norm)
 
         return [descriptor[i] / norm for i in range(len(descriptor))]
+
+
+class VectorizedNormalization(Stage):
+    def __init__(self, block_size: int, flatten: bool = True):
+        self.block_size = block_size
+        self.flatten = flatten
+
+    def apply(self, cells: NumpyCells) -> np.ndarray:
+        blocks_per_column = cells.rows - self.block_size + 1
+        blocks_per_row = cells.columns - self.block_size + 1
+
+        histogram_size = cells.histograms.shape[-1]
+        block_features = self.block_size * self.block_size * histogram_size
+
+        descriptor = (
+            np.lib.stride_tricks.sliding_window_view(
+                cells.histograms,
+                window_shape=(self.block_size, self.block_size),
+                axis=(0, 1),
+            )
+            .transpose(0, 1, 3, 4, 2)
+            .reshape(blocks_per_column * blocks_per_row, block_features)
+        )
+
+        descriptor = descriptor / (
+            np.linalg.norm(descriptor, axis=-1, keepdims=True) + 1e-6
+        )
+
+        if self.flatten:
+            return descriptor.ravel()
+        return descriptor.reshape(blocks_per_column, blocks_per_row, block_features)

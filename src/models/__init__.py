@@ -1,5 +1,13 @@
-from .image import Image, ImageMode
-from .gradients import Gradients
-from .cells import Cells
+from .image import Image, ImageMode, NumpyImage
+from .gradients import Gradients, NumpyGradients
+from .cells import Cells, NumpyCells
 
-__all__ = ["Image", "ImageMode", "Gradients", "Cells"]
+__all__ = [
+    "Image",
+    "ImageMode",
+    "NumpyImage",
+    "Gradients",
+    "NumpyGradients",
+    "Cells",
+    "NumpyCells",
+]
