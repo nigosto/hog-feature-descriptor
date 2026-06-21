@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.models import Image
+from src.models import NumpyImage
 from src.pipeline import Pipeline
 from src.pipeline.stages import (
     VectorizedResizing,
@@ -24,5 +24,5 @@ if __name__ == "__main__":
 
     for file in directory.rglob("*"):
         if file.is_file():
-            img = Image.from_file(file)
+            img = NumpyImage.from_file(file)
             pipeline.run(img)
