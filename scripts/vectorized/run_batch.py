@@ -1,15 +1,16 @@
-import sys
+from pathlib import Path
 from src.models import NumpyImage
+from src.pipeline import Pipeline
 from src.pipeline.stages import (
     VectorizedGrayscale,
     VectorizedSobelGradients,
     VectorizedHistograms,
     VectorizedNormalization,
 )
-from src.pipeline import Pipeline
 
 if __name__ == "__main__":
-    img = NumpyImage.from_file(sys.argv[1])
+    directory = Path("./data/caltech-101")
+
     pipeline = Pipeline(
         [
             VectorizedGrayscale(),
@@ -18,4 +19,8 @@ if __name__ == "__main__":
             VectorizedNormalization(block_size=2),
         ]
     )
-    pipeline.run(img)
+
+    for file in directory.rglob("*"):
+        if file.is_file():
+            img = NumpyImage.from_file(file)
+            pipeline.run(img)

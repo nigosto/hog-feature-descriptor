@@ -2,11 +2,11 @@ from pathlib import Path
 from src.models import Image
 from src.pipeline import Pipeline
 from src.pipeline.stages import (
-    Resizing,
-    Grayscale,
-    SobelGradients,
-    Histograms,
-    Normalization,
+    VectorizedResizing,
+    VectorizedGrayscale,
+    VectorizedSobelGradients,
+    VectorizedHistograms,
+    VectorizedNormalization,
 )
 
 if __name__ == "__main__":
@@ -14,11 +14,11 @@ if __name__ == "__main__":
 
     pipeline = Pipeline(
         [
-            Resizing(64, 128),
-            Grayscale(),
-            SobelGradients(),
-            Histograms(cell_size=8, bins_per_cell=9),
-            Normalization(block_size=2),
+            VectorizedResizing(64, 128),
+            VectorizedGrayscale(),
+            VectorizedSobelGradients(),
+            VectorizedHistograms(cell_size=8, bins_per_cell=9),
+            VectorizedNormalization(block_size=2),
         ]
     )
 
