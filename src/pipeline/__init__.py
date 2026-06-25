@@ -1,4 +1,4 @@
-from .pipeline import Pipeline
+from .pipeline import Pipeline, ParallelPipeline
 from .stage import Stage
 
-__all__ = ["Pipeline", "Stage"]
+__all__ = ["Pipeline", "ParallelPipeline", "Stage"]
