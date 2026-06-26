@@ -6,12 +6,15 @@ fonttools==4.62.1
 Jinja2==3.1.6
 kiwisolver==1.5.0
 linkify-it-py==2.1.0
+llvmlite==0.47.0
 markdown-it-py==4.2.0
 MarkupSafe==3.0.3
 matplotlib==3.10.9
 mdit-py-plugins==0.6.0
 mdurl==0.1.2
 memray==1.19.3
+mpi4py==4.1.2
+numba==0.65.1
 numpy==2.4.4
 nvidia-ml-py==13.595.45
 packaging==26.2
@@ -26,6 +29,7 @@ python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 rich==15.0.0
 scalene==2.3.0
+scipy==1.18.0
 six==1.17.0
 snakeviz==2.2.2
 textual==8.2.5

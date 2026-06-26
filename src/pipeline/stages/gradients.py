@@ -1,3 +1,4 @@
+from numba import njit, prange
 import numpy as np
 import math
 from .. import Stage
@@ -50,7 +51,51 @@ class VectorizedSobelGradients(Stage):
             np.degrees(np.arctan2(vertical_gradients, horizontal_gradients)) % 180
         )
 
-        magnitudes = np.pad(magnitudes, pad_width=1, mode='constant', constant_values=0.0)
-        orientations = np.pad(orientations, pad_width=1, mode='constant', constant_values=0.0)
+        magnitudes = np.pad(
+            magnitudes, pad_width=1, mode="constant", constant_values=0.0
+        )
+        orientations = np.pad(
+            orientations, pad_width=1, mode="constant", constant_values=0.0
+        )
 
         return NumpyGradients(img.height, img.width, magnitudes, orientations)
+
+
+class NumbaSobelGradients(Stage):
+    gx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    gy = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
+
+    def apply(self, img: NumpyImage) -> NumpyGradients:
+        magnitudes, orientations = _compute_gradients(
+            img.pixels, img.height, img.width, self.gx, self.gy
+        )
+        return Gradients(img.height, img.width, magnitudes, orientations)
+
+
+@njit(cache=True, parallel=True)
+def _compute_gradients(
+    pixels: np.ndarray, height: int, width: int, gx: np.ndarray, gy: np.ndarray
+):
+    magnitudes = np.zeros((height, width), dtype=np.float32)
+    orientations = np.zeros((height, width), dtype=np.float32)
+
+    for i in prange(1, height - 1):
+        for j in range(1, width - 1):
+            horizontal_gradient, vertical_gradient = 0.0, 0.0
+
+            for gi in range(3):
+                row = i + gi - 1
+
+                for gj in range(3):
+                    column = j + gj - 1
+                    pixel = pixels[row, column]
+
+                    horizontal_gradient += pixel * gx[gi, gj]
+                    vertical_gradient += pixel * gy[gi, gj]
+
+            magnitudes[i, j] = math.hypot(horizontal_gradient, vertical_gradient)
+            
+            angle = math.degrees(math.atan2(vertical_gradient, horizontal_gradient))
+            orientations[i, j] = angle % 180
+
+    return magnitudes, orientations

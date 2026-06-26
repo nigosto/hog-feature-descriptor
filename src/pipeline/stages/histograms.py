@@ -1,3 +1,4 @@
+from numba import njit, prange
 import numpy as np
 from .. import Stage
 from src.models import Gradients, NumpyGradients, Cells, NumpyCells
@@ -80,3 +81,50 @@ class VectorizedHistograms(BaseHistograms):
         ).reshape(cells_per_column, cells_per_row, self.bins_per_cell)
 
         return NumpyCells(cells_per_column, cells_per_row, self.cell_size, histograms)
+
+class NumbaHistograms(BaseHistograms):
+    def __init__(self, cell_size: int, bins_per_cell: int):
+        super().__init__(cell_size, bins_per_cell)
+
+    def apply(self, gradients: NumpyGradients) -> NumpyCells:
+        cells_per_column = gradients.height // self.cell_size
+        cells_per_row = gradients.width // self.cell_size
+
+        histograms = _compute_histograms(
+            gradients.magnitudes,
+            gradients.orientations,
+            cells_per_column,
+            cells_per_row,
+            self.cell_size,
+            self.bins_per_cell,
+            self.bin_width,
+        )
+
+        return NumpyCells(cells_per_column, cells_per_row, self.cell_size, histograms)
+
+
+@njit(cache=True, parallel=True)
+def _compute_histograms(
+    magnitudes: np.ndarray,
+    orientations: np.ndarray,
+    cells_per_column: int,
+    cells_per_row: int,
+    cell_size: int,
+    bins_per_cell: int,
+    bin_width: float
+):
+    histograms = np.zeros((cells_per_column, cells_per_row, bins_per_cell), dtype=np.float32)
+
+    for i in prange(cells_per_column):
+        for j in range(cells_per_row):
+            for ci in range(cell_size):
+                row = ci + i * cell_size
+
+                for cj in range(cell_size):
+                    column = cj + j * cell_size
+                    angle = orientations[row, column] % 180
+                    bin_index = int(angle / bin_width)
+
+                    histograms[i, j, bin_index] += magnitudes[row, column]
+
+    return histograms

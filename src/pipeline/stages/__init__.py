@@ -1,9 +1,9 @@
 from .load import LoadImage, VectorizedLoadImage
 from .resizing import Resizing, VectorizedResizing
-from .grayscale import Grayscale, VectorizedGrayscale
-from .gradients import SobelGradients, VectorizedSobelGradients
-from .histograms import Histograms, VectorizedHistograms
-from .normalization import Normalization, VectorizedNormalization
+from .grayscale import Grayscale, VectorizedGrayscale, NumbaGrayscale
+from .gradients import SobelGradients, VectorizedSobelGradients, NumbaSobelGradients
+from .histograms import Histograms, VectorizedHistograms, NumbaHistograms
+from .normalization import Normalization, VectorizedNormalization, NumbaNormalization
 
 __all__ = [
     "LoadImage",
@@ -12,10 +12,14 @@ __all__ = [
     "VectorizedResizing",
     "Grayscale",
     "VectorizedGrayscale",
+    "NumbaGrayscale",
     "SobelGradients",
     "VectorizedSobelGradients",
+    "NumbaSobelGradients",
     "Histograms",
     "VectorizedHistograms",
+    "NumbaHistograms",
     "Normalization",
-    "VectorizedNormalization"
+    "VectorizedNormalization",
+    "NumbaNormalization"
 ]
