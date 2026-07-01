@@ -217,8 +217,12 @@ def _resize_rgb(
                     w = max(0, min(x_max, sj + 1) - max(x_min, sj))
                     area = w * h
 
-                    resized_image_pixels[i, j] += pixels[si, sj] * area
+                    resized_image_pixels[i, j, 0] += pixels[si, sj, 0] * area
+                    resized_image_pixels[i, j, 1] += pixels[si, sj, 1] * area
+                    resized_image_pixels[i, j, 2] += pixels[si, sj, 2] * area
                     total_area += area
-            resized_image_pixels[i, j] /= total_area
+            resized_image_pixels[i, j, 0] /= total_area
+            resized_image_pixels[i, j, 1] /= total_area
+            resized_image_pixels[i, j, 2] /= total_area
 
     return resized_image_pixels
